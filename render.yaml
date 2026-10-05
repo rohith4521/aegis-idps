@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: aegis-idps-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && alembic upgrade head
+    startCommand: python -m app.database.init_db && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.16
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aegis-idps-postgres
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+      - key: PREVENTION_PROVIDER
+        value: mock
+      - key: PREVENTION_ENABLED
+        value: "true"
+      - key: DEMO_MODE
+        value: "false"
+
+databases:
+  - name: aegis-idps-postgres
+    plan: free
+    databaseName: idps_db
+    user: idps_admin

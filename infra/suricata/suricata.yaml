@@ -1,0 +1,32 @@
+%YAML 1.1
+---
+suricata-version: "7.0"
+
+vars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!$HOME_NET"
+    HTTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+
+default-log-dir: /var/log/suricata
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      types:
+        - alert:
+            payload: yes
+            payload-buffer-size: 4kb
+            metadata: yes
+            tagged-packets: yes
+        - flow
+        - dns
+        - http
+        - tls
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - local.rules
