@@ -54,6 +54,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -105,6 +106,15 @@ app.include_router(threats_router, prefix="/api")
 app.include_router(blocked_sources_router, prefix="/api")
 app.include_router(prevention_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
+
+# Also mount REST routers directly (e.g. /auth/login, /health)
+app.include_router(auth_router)
+app.include_router(events_router)
+app.include_router(incidents_router)
+app.include_router(threats_router)
+app.include_router(blocked_sources_router)
+app.include_router(prevention_router)
+app.include_router(health_router)
 
 # Mount WebSocket router
 app.include_router(ws_router)
